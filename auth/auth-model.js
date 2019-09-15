@@ -21,8 +21,8 @@ function findBy(filter) {
 }
 
 //used for endpoint where it's a POST for /api/guides
-async function add(guide) {
-  const [id] = await db('patrons').insert(guide);
+async function add(patron) {
+  const [id] = await db('patrons').insert(patron);
 
   return findById(id);
 }

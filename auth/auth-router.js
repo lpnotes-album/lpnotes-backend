@@ -6,7 +6,7 @@ const secrets = require('../config/secret.js');
 const Auth = require('./auth-model.js')
 
 
-router.post('/', (req, res) => {
+router.post('/login', validPatron, (req, res) => {
     let { username, password } = req.body;
   
     Auth.findBy({ username })
@@ -25,11 +25,32 @@ router.post('/', (req, res) => {
         res.status(500).json(error);
       });
   });
+
+router.post('/register', validPatron, async (req,res)=>{
+  try {
+    let newPatron = req.body;
+
+    const hash = bcrypt.hashSync(newPatron.password,11);
+    newGuide.password = hash;
+
+    const newPatronToAdd = await Auth.add(newPatron);
+
+    res.status(201).json(newPatronToAdd);
+
+  } catch (err) {
+    res.status(403).json({message: 'Registering new patron impossible', errMessage:err})
+  }
+});
+
+
+router.get('/', (req, res) => {
+    res.status(200).json({message:"Endpoint works"});
+})
   
-  function generateToken(guide) {
+  function generateToken(patron) {
     const payload = {
-      subject: guide.id, // sub in payload is what the token is about
-      username: guide.username,
+      subject: patron.id, // sub in payload is what the token is about
+      username: patron.username,
       // ...otherData
     };
   
@@ -41,5 +62,23 @@ router.post('/', (req, res) => {
     // extract the secret away so it can be required and used where needed
     return jwt.sign(payload, secrets.jwtSecret, options); // this method is synchronous
   }
+
+  async function validPatron( req, res, next) {
+    const {username, password} = req.body; 
+    try{
+      if (username && password){
+        next();
+        
+      } else {
+        res.status(403).json({message:"You need a username and/or password!"})
+      }
+    } catch (err) {
+      res.status(500).json({message:"cannot validate", errMessage:err})
+    }
+  }
   
+
+
+
+
   module.exports = router;
