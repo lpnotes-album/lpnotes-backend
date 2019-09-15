@@ -13,16 +13,16 @@ router.post('/login', validPatron, (req, res) => {
       .first()
       .then(user => {
         if (user && bcrypt.compareSync(password, user.password)) {
-          const token = generateToken(guide);
+          const token = generateToken(user);
           res.status(200).json({
-            message: `Welcome ${guide.username}! Have a token`, token
+            message: `Welcome ${user.username}! Have a token`, token
           });
         } else {
           res.status(401).json({ message: 'Invalid Credentials' });
         }
       })
       .catch(error => {
-        res.status(500).json(error);
+        res.status(500).json({message:"Something went catastrophically wrong",errMessage:error});
       });
   });
 
@@ -31,7 +31,7 @@ router.post('/register', validPatron, async (req,res)=>{
     let newPatron = req.body;
 
     const hash = bcrypt.hashSync(newPatron.password,11);
-    newGuide.password = hash;
+    newPatron.password = hash;
 
     const newPatronToAdd = await Auth.add(newPatron);
 
