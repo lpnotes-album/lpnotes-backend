@@ -6,7 +6,6 @@ module.exports = {
   findBy,
   findById,
   update,
-  findTrips
 };
 
 
