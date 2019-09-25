@@ -1,5 +1,9 @@
 # lpnotes-backend
-Backend (Node)
 
+## Notes
+- Backend (Node)
+- Merge Staging Into Master requires PR review.
 
-Merge Staging Into Master requires PR review.
+## Endpoints
+- URL/login
+- URL/register (needs username, password)
